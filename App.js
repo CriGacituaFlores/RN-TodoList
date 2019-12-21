@@ -1,84 +1,28 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Modal, TextInput } from 'react-native';
-import Item from './item'
-import Button from './button'
-import Input from './input';
+import * as Font from "expo-font";
+import { Text, View } from 'react-native';
+import Application from "./src"
 
 export default class App extends React.Component {
 
 	state = {
-		data: [],
-		isVisible: false,
-		text: '',
+		fontLoaded: false,
 	}
 
-  handlePress = () => {
-		this.setState({isVisible: true})
-	}
-	
-	handleChange = text => {
-		this.setState({text})
-	}
-
-	handleSave = () => {
-		const { text, data } = this.state;
-		const datos = [{key: Math.random().toString(), title: text}].concat(data)
-		this.setState({data: datos, isVisible: false, text: ''})
+	async componentDidMount() {
+		await Font.loadAsync({
+			'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
+		})
+		this.setState({fontLoaded: true})
 	}
 
   render() {
-		const { data, value } = this.state;
+		const { fontLoaded } = this.state;
+		if(!fontLoaded) {
+			return <View><Text>Cargando fuente...</Text></View> 
+		}
     return (
-      <View style={[styles.container, styles.gray]}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Recordatorios</Text>  
-        </View>
-				<View style={styles.view}>
-					<Button title='Agregar' onPress={this.handlePress}/>
-				</View>
-        <FlatList data={data} renderItem={Item} />
-				<Modal visible={this.state.isVisible} animationType="slide">
-					<View style={[styles.container, styles.center]}>
-						<Text style={styles.modalTitle}>Ingrese recordatorio</Text>
-						<Input value={value} onChangeText={this.handleChange} placeholder="Recordatorio"/>
-						<Button title="Guardar" onPress={this.handleSave}/>
-					</View>
-				</Modal>
-      </View>
+      <Application/>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-	},
-	center: {
-		justifyContent: "center",
-		alignItems: "center"
-	},
-  header: {
-		height: 100,
-		borderBottomWidth: 1,
-		borderBottomColor: "#ddd"
-	},
-	title: {
-		textAlign: "center",
-		marginTop: 50,
-		fontSize: 28
-	},
-	view: {
-		height: 50,
-		margin: 15,
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "center"
-	},
-	gray: {
-		backgroundColor: "#eee"
-	},
-	modalTitle: {
-		fontSize: 28
-	},
-});
