@@ -1,22 +1,33 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Modal } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Modal, TextInput } from 'react-native';
 import Item from './item'
 import Button from './button'
-import datos from './datos';
+import Input from './input';
 
 export default class App extends React.Component {
 
 	state = {
-		data: datos,
+		data: [],
 		isVisible: false,
+		text: '',
 	}
 
   handlePress = () => {
 		this.setState({isVisible: true})
-  }
+	}
+	
+	handleChange = text => {
+		this.setState({text})
+	}
+
+	handleSave = () => {
+		const { text, data } = this.state;
+		const datos = [{key: Math.random().toString(), title: text}].concat(data)
+		this.setState({data: datos, isVisible: false, text: ''})
+	}
 
   render() {
-		const { data } = this.state;
+		const { data, value } = this.state;
     return (
       <View style={[styles.container, styles.gray]}>
         <View style={styles.header}>
@@ -29,6 +40,8 @@ export default class App extends React.Component {
 				<Modal visible={this.state.isVisible} animationType="slide">
 					<View style={[styles.container, styles.center]}>
 						<Text style={styles.modalTitle}>Ingrese recordatorio</Text>
+						<Input value={value} onChangeText={this.handleChange} placeholder="Recordatorio"/>
+						<Button title="Guardar" onPress={this.handleSave}/>
 					</View>
 				</Modal>
       </View>
@@ -67,5 +80,5 @@ const styles = StyleSheet.create({
 	},
 	modalTitle: {
 		fontSize: 28
-	}
+	},
 });
